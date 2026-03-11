@@ -1,0 +1,13 @@
+# ADAS Perception System – Python dependencies
+# Install with:  pip install -r requirements.txt
+
+# Core CV and DL
+ultralytics>=8.0.0          # YOLOv8 (auto-downloads weights)
+opencv-python>=4.8.0        # or opencv-python-headless for servers
+numpy>=1.24.0
+
+# Optional: faster NMS / scipy geometry helpers
+scipy>=1.11.0
+
+# Optional: progress bars
+tqdm>=4.65.0
