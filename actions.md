@@ -57,8 +57,33 @@ Format per entry:
      TEMPLATE — copy this block for every new change
      ──────────────────────────────────────────────────────────────────── -->
 
+## [v1.1.0] — 2026-03-10
+
+### Added / Changed / Fixed / Removed
+- **Changed**: Refactored the flat project structure into a modular one (`config/`, `modules/`, `utils/`).
+- **Changed**: Updated `settings.py` implementation to sit under `config/settings.py` as a centralized dataclass configuration.
+
+### Files modified
+| File | Change summary |
+|------|---------------|
+| `config/settings.py` | Added centralized `ADASConfig` parameters |
+| `config/__init__.py` | Package init for config |
+| `modules/__init__.py` | Package init for modules |
+| `*.py` (root) | Moved all module (.py) files from the project root into `modules/`, `utils/`, or `config/` |
+
+### Why
+- Enhances code maintainability, separation of concerns, and clearer project architecture as the ADAS system grows.
+
+### Rollback steps
+1. `git checkout main`
+2. `git revert <commit-hash>` -> Revert the structural modifications.
+
+<!-- ─────────────────────────────────────────────────────────────────────
+     TEMPLATE — copy this block for every new change
+     ──────────────────────────────────────────────────────────────────── -->
+
 <!--
-## [v1.1.0] — YYYY-MM-DD
+## [v1.2.0] — YYYY-MM-DD
 
 ### Added / Changed / Fixed / Removed
 - 
