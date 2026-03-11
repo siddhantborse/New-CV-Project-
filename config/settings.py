@@ -7,6 +7,37 @@ Change values here rather than hunting through module code.
 
 from dataclasses import dataclass, field
 from typing import Tuple
+from enum import Enum
+
+
+# ---------------------------------------------------------------------------
+# Environment mode
+# ---------------------------------------------------------------------------
+class EnvMode(str, Enum):
+    DAY   = "day"
+    NIGHT = "night"
+    RAINY = "rainy"
+
+
+@dataclass
+class EnvironmentConfig:
+    """
+    Drives adaptive parameter adjustments in perception modules.
+
+    DAY:   standard Canny thresholds, normal ROI
+    NIGHT: brightness-adaptive Canny, slightly wider ROI apex
+    RAINY: lower Canny thresholds (low-contrast lanes), wider ROI apex
+    """
+    mode: EnvMode = EnvMode.DAY
+
+    # NIGHT / RAINY: extra fraction added to roi_apex_width_fraction
+    roi_apex_extra: float = 0.04
+
+    # NIGHT: target frame brightness (0–255) used to rescale Canny thresholds
+    night_brightness_target: float = 80.0
+
+    # RAINY: Canny threshold scale-down factor
+    rainy_canny_scale: float = 0.70
 
 
 # ---------------------------------------------------------------------------
@@ -132,12 +163,13 @@ class AlertConfig:
 # ---------------------------------------------------------------------------
 @dataclass
 class ADASConfig:
-    video:     VideoConfig     = field(default_factory=VideoConfig)
-    lane:      LaneConfig      = field(default_factory=LaneConfig)
-    detection: DetectionConfig = field(default_factory=DetectionConfig)
-    tracker:   TrackerConfig   = field(default_factory=TrackerConfig)
-    proximity: ProximityConfig = field(default_factory=ProximityConfig)
-    alert:     AlertConfig     = field(default_factory=AlertConfig)
+    video:       VideoConfig       = field(default_factory=VideoConfig)
+    lane:        LaneConfig        = field(default_factory=LaneConfig)
+    detection:   DetectionConfig   = field(default_factory=DetectionConfig)
+    tracker:     TrackerConfig     = field(default_factory=TrackerConfig)
+    proximity:   ProximityConfig   = field(default_factory=ProximityConfig)
+    alert:       AlertConfig       = field(default_factory=AlertConfig)
+    environment: EnvironmentConfig = field(default_factory=EnvironmentConfig)
 
 
 # Module-level singleton – import and use directly, or override in tests

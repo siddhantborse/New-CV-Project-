@@ -21,7 +21,7 @@ import numpy as np
 from dataclasses import dataclass, field
 from typing import Optional, Tuple, List
 
-from config.settings import LaneConfig
+from config.settings import LaneConfig, EnvironmentConfig, EnvMode
 from utils.geometry import (
     trapezoidal_roi_vertices,
     slope_intercept,
@@ -53,10 +53,15 @@ class LaneDetector:
     """
     Stateful lane detector.  Call `process(frame)` each frame.
     State holds smoothed lane parameters across frames via EMA.
+
+    Pass an EnvironmentConfig to enable adaptive Canny thresholds and
+    wider ROI for night / rainy conditions.
     """
 
-    def __init__(self, cfg: LaneConfig = LaneConfig()) -> None:
-        self.cfg = cfg
+    def __init__(self, cfg: LaneConfig = LaneConfig(),
+                 env_cfg: EnvironmentConfig = EnvironmentConfig()) -> None:
+        self.cfg     = cfg
+        self.env_cfg = env_cfg
         # Smoothed (slope, intercept) for left and right lanes
         self._left_smooth:  Optional[Tuple[float, float]] = None
         self._right_smooth: Optional[Tuple[float, float]] = None
@@ -107,23 +112,50 @@ class LaneDetector:
         self._right_smooth = None
 
     # ------------------------------------------------------------------
-    # Pre-processing
+    # Pre-processing  (environment-aware)
     # ------------------------------------------------------------------
     def _preprocess(self, frame: np.ndarray) -> np.ndarray:
         gray    = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         blurred = cv2.GaussianBlur(gray, self.cfg.blur_kernel, 0)
-        edges   = cv2.Canny(blurred, self.cfg.canny_low, self.cfg.canny_high)
+
+        low, high = self._adaptive_canny_thresholds(blurred)
+        edges = cv2.Canny(blurred, low, high)
         return edges
 
+    def _adaptive_canny_thresholds(self, gray: np.ndarray) -> Tuple[int, int]:
+        """Return Canny (low, high) adjusted for the current environment mode."""
+        low  = self.cfg.canny_low
+        high = self.cfg.canny_high
+        mode = self.env_cfg.mode
+
+        if mode == EnvMode.NIGHT:
+            brightness = float(np.mean(gray))
+            if brightness < self.env_cfg.night_brightness_target:
+                # Scale thresholds down proportionally to how dark the frame is
+                scale = max(0.35, brightness / self.env_cfg.night_brightness_target)
+                low   = int(low  * scale)
+                high  = int(high * scale)
+
+        elif mode == EnvMode.RAINY:
+            scale = self.env_cfg.rainy_canny_scale
+            low   = int(low  * scale)
+            high  = int(high * scale)
+
+        return max(10, low), max(20, high)
+
     # ------------------------------------------------------------------
-    # ROI
+    # ROI  (environment-aware – wider apex for night/rainy)
     # ------------------------------------------------------------------
     def _apply_roi(self, edges: np.ndarray, h: int, w: int) -> np.ndarray:
+        apex_w = self.cfg.roi_apex_width_fraction
+        if self.env_cfg.mode in (EnvMode.NIGHT, EnvMode.RAINY):
+            apex_w += self.env_cfg.roi_apex_extra
+
         vertices = trapezoidal_roi_vertices(
             h, w,
             self.cfg.roi_top_fraction,
             self.cfg.roi_bottom_fraction,
-            self.cfg.roi_apex_width_fraction,
+            apex_w,
         )
         mask = np.zeros_like(edges)
         cv2.fillPoly(mask, [vertices], 255)

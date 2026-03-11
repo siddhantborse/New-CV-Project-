@@ -53,37 +53,59 @@ Format per entry:
 
 ---
 
-<!-- ─────────────────────────────────────────────────────────────────────
-     TEMPLATE — copy this block for every new change
-     ──────────────────────────────────────────────────────────────────── -->
+## [v1.1.0] — 2026-03-11
 
-## [v1.1.0] — 2026-03-10
+### Added — Evaluation, Ablation, Environment Modes, Driver Summary
 
-### Added / Changed / Fixed / Removed
-- **Changed**: Refactored the flat project structure into a modular one (`config/`, `modules/`, `utils/`).
-- **Changed**: Updated `settings.py` implementation to sit under `config/settings.py` as a centralized dataclass configuration.
+**Scope:** Major feature expansion. No existing module interfaces changed; all additions
+are additive — existing `main.py` CLI flags still work identically.
 
-### Files modified
+**New files introduced:**
+| File | Purpose |
+|------|---------|
+| `metrics/__init__.py` | Package marker |
+| `metrics/eval_events.py` | `FrameLog` dataclass, `evaluate_video_log()`, cut-in detector, lead-time calculator |
+| `metrics/driver_profile.py` | `DriverSummary` dataclass, `build_driver_summary()`, `print_driver_summary()` |
+| `experiments/__init__.py` | Package marker |
+| `experiments/ablation.py` | 5-config ablation runner, CSV/JSON export, comparison table printer |
+| `results/` | Auto-created directory for metrics JSON output |
+
+**Modified files:**
 | File | Change summary |
 |------|---------------|
-| `config/settings.py` | Added centralized `ADASConfig` parameters |
-| `config/__init__.py` | Package init for config |
-| `modules/__init__.py` | Package init for modules |
-| `*.py` (root) | Moved all module (.py) files from the project root into `modules/`, `utils/`, or `config/` |
+| `config/settings.py` | Added `EnvMode` enum, `EnvironmentConfig` dataclass; added `environment` field to `ADASConfig` |
+| `modules/lane_detection.py` | `LaneDetector.__init__` now accepts `env_cfg: EnvironmentConfig`; added `_adaptive_canny_thresholds()` and environment-aware `_apply_roi()` |
+| `main.py` | Added `--env-mode`, `--output-metrics` CLI flags; per-frame `FrameLog` collection; post-run `evaluate_video_log` + `build_driver_summary` + JSON write |
+| `test_modules.py` | Added 4 new test functions: `test_environment_config`, `test_eval_events`, `test_cut_in_detection`, `test_driver_profile` |
+| `README.md` | Full rewrite — added "Why This Matters", "Tech Highlights", metrics format docs, ablation usage |
 
-### Why
-- Enhances code maintainability, separation of concerns, and clearer project architecture as the ADAS system grows.
+**New CLI flags in main.py:**
+```
+--env-mode {day,night,rainy}    Adaptive lane detection environment mode
+--output-metrics PATH           Save metrics + driver summary JSON (default: results/<video>_metrics.json)
+```
 
-### Rollback steps
-1. `git checkout main`
-2. `git revert <commit-hash>` -> Revert the structural modifications.
+**Why:**
+- Evaluation metrics make the project recruiter-credible: it demonstrates understanding
+  that perception systems need to be *measured*, not just run
+- Environment modes show awareness of real-world deployment conditions
+- Ablation script demonstrates scientific rigour — the ability to isolate and test
+  individual design decisions
 
-<!-- ─────────────────────────────────────────────────────────────────────
+**Test results:** All 30+ smoke tests pass (`python test_modules.py`)
+
+**Rollback steps:**
+1. `git revert HEAD` — reverts all v1.1.0 changes in one step
+2. Or manually: remove `metrics/`, `experiments/`, `results/`; revert
+   `config/settings.py`, `modules/lane_detection.py`, `main.py`, `test_modules.py`
+   to the v1.0.0 state via `git checkout v1.0.0 -- <file>`
+
+---
      TEMPLATE — copy this block for every new change
      ──────────────────────────────────────────────────────────────────── -->
 
 <!--
-## [v1.2.0] — YYYY-MM-DD
+## [v1.1.0] — YYYY-MM-DD
 
 ### Added / Changed / Fixed / Removed
 - 
