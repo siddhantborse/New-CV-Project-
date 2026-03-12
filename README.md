@@ -1,5 +1,7 @@
 # Smart Co-Pilot: Real-Time ADAS Perception System
 
+**🌟 Status: First Working Prototype (Milestone 1)**
+
 A portfolio-grade ADAS pipeline that takes any front-facing dashcam video and outputs
 a processed video with lane overlays, vehicle bounding boxes, distance bands, driver alerts,
 and a post-run session metrics report.

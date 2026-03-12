@@ -1,0 +1,28 @@
+{
+  "video_metrics": {
+    "total_frames": 450,
+    "danger_condition_frames": 0,
+    "danger_alert_frames": 0,
+    "danger_tp": 0,
+    "danger_fp": 0,
+    "danger_detection_rate": 0.0,
+    "danger_fp_rate": 0.0,
+    "danger_avg_lead_frames": null,
+    "lane_lost_frames": 8,
+    "lane_lost_alert_frames": 8,
+    "lane_lost_detection_rate": 1.0,
+    "cut_in_event_count": 0,
+    "cut_in_frames": [],
+    "lane_detected_pct": 98.22
+  },
+  "driver_summary": {
+    "total_frames": 450,
+    "danger_ahead_pct": 0.0,
+    "danger_alert_count": 0,
+    "lane_detected_pct": 98.22,
+    "cut_in_count": 0,
+    "avg_danger_lead_frames": null,
+    "risk_level": "LOW",
+    "narrative": "No significant close-following situations were detected.  Lane markings were clearly visible throughout the session (98% detection rate).  No cut-in events were observed.  Overall session risk assessment: LOW."
+  }
+}
