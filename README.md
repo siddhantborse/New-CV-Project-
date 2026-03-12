@@ -1,6 +1,6 @@
 # Smart Co-Pilot: Real-Time ADAS Perception System
 
-**🌟 Status: First Working Prototype (Milestone 1)**
+** Status: First Working Prototype (Milestone 1)**
 
 A portfolio-grade ADAS pipeline that takes any front-facing dashcam video and outputs
 a processed video with lane overlays, vehicle bounding boxes, distance bands, driver alerts,
@@ -70,7 +70,7 @@ adas_system/
 ├── experiments/
 │   └── ablation.py              # Multi-config comparative experiment runner
 ├── results/                     # Auto-created; metrics JSON written here
-└── test_modules.py              # 30+ smoke tests; no GPU or video file needed
+└── test_modules.py              # 30+ smoke tests; no GPU or video file needed and it was hard to make this archetecture SID 
 ```
 
 ---
