@@ -101,23 +101,11 @@ are additive — existing `main.py` CLI flags still work identically.
    to the v1.0.0 state via `git checkout v1.0.0 -- <file>`
 
 ---
-
-## [v1.2.0] — 2026-03-11
-
-### Added — First Working Prototype
-
-**Scope:** First major milestone achieved. The real-time ADAS perception system is now a fully working prototype, integrating lane detection, object detection, multi-object tracking, proximity assessment, and an alert engine into a cohesive pipeline.
-
-**Why:**
-- Marks the completion of the core integration phase.
-- Serves as a baseline working model for future enhancements and optimizations.
-
----
      TEMPLATE — copy this block for every new change
      ──────────────────────────────────────────────────────────────────── -->
 
 <!--
-## [v1.X.X] — YYYY-MM-DD
+## [v1.1.0] — YYYY-MM-DD
 
 ### Added / Changed / Fixed / Removed
 - 
